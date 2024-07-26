@@ -1,31 +1,42 @@
 package com.github.arturtcs.gerenciamentodeprojetos.service.impl;
 
 import com.github.arturtcs.gerenciamentodeprojetos.model.Cliente;
+import com.github.arturtcs.gerenciamentodeprojetos.model.dto.ClienteDTO;
 import com.github.arturtcs.gerenciamentodeprojetos.repositories.ClienteRepository;
 import com.github.arturtcs.gerenciamentodeprojetos.service.ClienteService;
 import com.github.arturtcs.gerenciamentodeprojetos.util.ValidacoesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ClienteServiceImpl implements ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
 
     @Override
-    public void cadastrarCliente(Cliente cliente) {
+    public ClienteDTO cadastrarCliente(ClienteDTO clienteDTO) {
 
-        ValidacoesUtil.validarCpf(cliente.getCpf());
-        ValidacoesUtil.validarEmail(cliente.getEmail());
+        ValidacoesUtil.validarNome(clienteDTO.nome());
+        ValidacoesUtil.validarCpf(clienteDTO.cpf());
+        ValidacoesUtil.validarEmail(clienteDTO.email());
 
         Cliente novoCliente = Cliente.builder()
-                .cpf(cliente.getCpf())
-                .email(cliente.getEmail())
-                .nome(cliente.getNome())
+                .cpf(clienteDTO.cpf())
+                .email(clienteDTO.email())
+                .nome(clienteDTO.nome())
                 .build();
 
-        clienteRepository.save(cliente);
+        Cliente clienteSalvo = clienteRepository.save(novoCliente);
+
+        return new ClienteDTO(
+                clienteSalvo.getId(),
+                clienteSalvo.getNome(),
+                clienteSalvo.getEmail(),
+                clienteSalvo.getCpf()
+        );
     }
 
     @Override
