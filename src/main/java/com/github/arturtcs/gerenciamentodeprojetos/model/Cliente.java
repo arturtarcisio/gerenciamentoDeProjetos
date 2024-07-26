@@ -1,12 +1,14 @@
 package com.github.arturtcs.gerenciamentodeprojetos.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Set;
 
 @Entity
 @Data
+@Builder
 public class Cliente {
 
     @Id
