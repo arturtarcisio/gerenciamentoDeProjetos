@@ -33,4 +33,9 @@ public class ClienteResource {
     public ResponseEntity<List<Cliente>> listarTodosOsClientes() {
         return ResponseEntity.ok(clienteService.listarClientes());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Cliente> listarClientePorId(@PathVariable Long id) {
+        return ResponseEntity.ok().body(clienteService.listarClientePorId(id));
+    }
 }

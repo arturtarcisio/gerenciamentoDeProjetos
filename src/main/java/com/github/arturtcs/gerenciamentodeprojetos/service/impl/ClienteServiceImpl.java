@@ -1,5 +1,6 @@
 package com.github.arturtcs.gerenciamentodeprojetos.service.impl;
 
+import com.github.arturtcs.gerenciamentodeprojetos.exceptions.ResourceNotFoundException;
 import com.github.arturtcs.gerenciamentodeprojetos.model.Cliente;
 import com.github.arturtcs.gerenciamentodeprojetos.model.dto.ClienteDTO;
 import com.github.arturtcs.gerenciamentodeprojetos.repositories.ClienteRepository;
@@ -56,6 +57,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public Cliente listarClientePorId(Long id) {
-        return null;
+        var optionalCliente = clienteRepository.findById(id);
+        return optionalCliente.orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado"));
     }
 }
