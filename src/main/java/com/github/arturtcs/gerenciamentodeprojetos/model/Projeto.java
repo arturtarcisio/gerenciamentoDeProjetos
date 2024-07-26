@@ -1,5 +1,6 @@
 package com.github.arturtcs.gerenciamentodeprojetos.model;
 
+import com.github.arturtcs.gerenciamentodeprojetos.enums.StatusProjeto;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,7 +15,9 @@ public class Projeto {
     private Long id;
 
     private String nome;
-    private String status; // Por exemplo: "Aberto", "Concluído"
+
+    @Enumerated(EnumType.STRING)
+    private StatusProjeto status;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")

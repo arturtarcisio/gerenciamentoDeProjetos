@@ -1,5 +1,6 @@
 package com.github.arturtcs.gerenciamentodeprojetos.model;
 
+import com.github.arturtcs.gerenciamentodeprojetos.enums.StatusAtividade;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,7 +14,8 @@ public class Atividade {
 
     private String descricao;
 
-    private String status; // Por exemplo: "Pendência", "Em andamento", "Concluída"
+    @Enumerated(EnumType.STRING)
+    private StatusAtividade status;
 
     @ManyToOne
     @JoinColumn(name = "projeto_id")
