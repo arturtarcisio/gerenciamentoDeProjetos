@@ -38,4 +38,10 @@ public class ClienteResource {
     public ResponseEntity<Cliente> listarClientePorId(@PathVariable Long id) {
         return ResponseEntity.ok().body(clienteService.listarClientePorId(id));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarCliente(@PathVariable Long id) {
+        clienteService.deletarCliente(id);
+        return ResponseEntity.noContent().build();
+    }
 }
