@@ -15,6 +15,10 @@ public class Cliente {
 
     private String nome;
 
+    private String email;
+
+    private String cpf;
+
     @OneToMany(mappedBy = "cliente")
     private Set<Projeto> projetos;
 

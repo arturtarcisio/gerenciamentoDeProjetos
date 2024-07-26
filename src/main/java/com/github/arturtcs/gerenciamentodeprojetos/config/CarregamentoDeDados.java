@@ -32,10 +32,14 @@ public class CarregamentoDeDados {
             // Criação de Clientes
             Cliente cliente1 = new Cliente();
             cliente1.setNome("Cliente 1");
+            cliente1.setCpf("45236429072");
+            cliente1.setEmail("cliente1@email.com");
             clienteRepository.save(cliente1);
 
             Cliente cliente2 = new Cliente();
             cliente2.setNome("Cliente 2");
+            cliente2.setCpf("45236428882");
+            cliente2.setEmail("cliente2@email.com");
             clienteRepository.save(cliente2);
 
             // Criação de Projetos
