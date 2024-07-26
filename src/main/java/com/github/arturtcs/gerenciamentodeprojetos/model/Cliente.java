@@ -1,5 +1,6 @@
 package com.github.arturtcs.gerenciamentodeprojetos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +26,8 @@ public class Cliente {
 
     private String cpf;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cliente")
     private Set<Projeto> projetos;
-
 
 }

@@ -51,7 +51,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public List<Cliente> listarClientes() {
-        return List.of();
+        return clienteRepository.findAll();
     }
 
     @Override
