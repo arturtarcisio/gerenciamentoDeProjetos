@@ -30,12 +30,12 @@ public class ClienteResource {
     }
 
     @GetMapping
-    public ResponseEntity<List<Cliente>> listarTodosOsClientes() {
+    public ResponseEntity<List<ClienteDTO>> listarTodosOsClientes() {
         return ResponseEntity.ok(clienteService.listarClientes());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> listarClientePorId(@PathVariable Long id) {
+    public ResponseEntity<ClienteDTO> listarClientePorId(@PathVariable Long id) {
         return ResponseEntity.ok().body(clienteService.listarClientePorId(id));
     }
 

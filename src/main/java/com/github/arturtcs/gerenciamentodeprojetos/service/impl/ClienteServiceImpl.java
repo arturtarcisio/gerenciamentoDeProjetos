@@ -10,11 +10,10 @@ import com.github.arturtcs.gerenciamentodeprojetos.service.ClienteService;
 import com.github.arturtcs.gerenciamentodeprojetos.service.ProjetoService;
 import com.github.arturtcs.gerenciamentodeprojetos.util.ValidacoesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
@@ -104,13 +103,26 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public List<Cliente> listarClientes() {
-        return clienteRepository.findAll();
+    public List<ClienteDTO> listarClientes() {
+        return clienteRepository.findAll().stream()
+                .map(cliente -> new ClienteDTO(
+                        cliente.getId(),
+                        cliente.getNome(),
+                        cliente.getEmail(),
+                        cliente.getCpf()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Cliente listarClientePorId(Long id) {
-        var optionalCliente = clienteRepository.findById(id);
-        return optionalCliente.orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+    public ClienteDTO listarClientePorId(Long id) {
+        return clienteRepository.findById(id)
+                .map(cliente -> new ClienteDTO(
+                        cliente.getId(),
+                        cliente.getNome(),
+                        cliente.getEmail(),
+                        cliente.getCpf()
+                ))
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }
 }
