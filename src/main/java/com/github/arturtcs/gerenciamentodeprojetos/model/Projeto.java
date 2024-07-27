@@ -28,8 +28,8 @@ public class Projeto {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL)
-    private Set<Atividade> atividades;
-
+    @OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Atividade> atividades = new HashSet<>();
 
 }

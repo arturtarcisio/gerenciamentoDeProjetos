@@ -10,6 +10,7 @@ import com.github.arturtcs.gerenciamentodeprojetos.repositories.ClienteRepositor
 import com.github.arturtcs.gerenciamentodeprojetos.repositories.ProjetoRepository;
 import com.github.arturtcs.gerenciamentodeprojetos.service.ProjetoService;
 import com.github.arturtcs.gerenciamentodeprojetos.util.ValidacoesUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +68,7 @@ public class ProjetoServiceImpl implements ProjetoService {
         return converterParaDTO(projetoRepository.save(projetoExistente));
     }
 
+    @Transactional
     @Override
     public void deletarProjeto(Long id) {
         Projeto projeto = projetoRepository.findById(id)

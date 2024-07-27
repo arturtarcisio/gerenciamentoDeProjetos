@@ -21,7 +21,6 @@ public class Atividade {
     private StatusAtividade status;
 
     @ManyToOne
-    @JoinColumn(name = "projeto_id")
+    @JoinColumn(name = "projeto_id", nullable = false)
     private Projeto projeto;
-
 }
