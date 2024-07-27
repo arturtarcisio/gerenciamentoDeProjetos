@@ -41,6 +41,8 @@ public class ProjetoServiceImpl implements ProjetoService {
             throw new ConflitoAtributoException("Nome do projeto já existente");
         }
 
+        ValidacoesUtil.validaStatusDoProjeto(projetoDTO.status());
+
         // Verifica se o cliente foi informado
         if (projetoDTO.clienteId() == null) {
             throw new RegraDeNegocioException("Cliente deve ser informado para cadastro do projeto");
@@ -90,6 +92,8 @@ public class ProjetoServiceImpl implements ProjetoService {
         }
 
         projetoExistente.setNome(projetoDTO.nome());
+
+        ValidacoesUtil.validaStatusDoProjeto(projetoDTO.status());
         projetoExistente.setStatus(projetoDTO.status());
 
         Projeto projetoAtualizado = projetoRepository.save(projetoExistente);
