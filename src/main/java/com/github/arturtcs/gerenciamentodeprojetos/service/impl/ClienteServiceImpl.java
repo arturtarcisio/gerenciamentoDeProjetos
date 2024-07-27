@@ -26,16 +26,15 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public ClienteDTO cadastrarCliente(ClienteDTO clienteDTO) {
+        validarClienteDTO(clienteDTO);
 
-        ValidacoesUtil.validarNome(clienteDTO.nome());
-        ValidacoesUtil.validarCpf(clienteDTO.cpf());
-        ValidacoesUtil.validarEmail(clienteDTO.email());
-
-        if (clienteRepository.existsByEmail(clienteDTO.email()))
+        if (clienteRepository.existsByEmail(clienteDTO.email())) {
             throw new ConflitoAtributoException("Email já existente");
+        }
 
-        if (clienteRepository.existsByCpf(clienteDTO.cpf()))
+        if (clienteRepository.existsByCpf(clienteDTO.cpf())) {
             throw new ConflitoAtributoException("CPF já existente");
+        }
 
         Cliente novoCliente = Cliente.builder()
                 .cpf(clienteDTO.cpf())
@@ -43,86 +42,72 @@ public class ClienteServiceImpl implements ClienteService {
                 .nome(clienteDTO.nome())
                 .build();
 
-        Cliente clienteSalvo = clienteRepository.save(novoCliente);
-
-        return new ClienteDTO(
-                clienteSalvo.getId(),
-                clienteSalvo.getNome(),
-                clienteSalvo.getEmail(),
-                clienteSalvo.getCpf()
-        );
+        return converterParaDTO(clienteRepository.save(novoCliente));
     }
 
     @Override
     public void deletarCliente(Long id) {
-        boolean clienteEstaEmProjeto = projetoService.verificaSeHaClienteEmAlgumProjeto(id);
-        if (clienteEstaEmProjeto == true) {
+        if (projetoService.verificaSeHaClienteEmAlgumProjeto(id)) {
             throw new ClienteComProjetosException("O cliente não pode ser excluído pois está vinculado a um ou mais projetos.");
-        } else {
-            clienteRepository
-                    .findById(id)
-                    .map( user -> {
-                        clienteRepository.delete(user);
-                        return Void.TYPE;
-                    })
-                    .orElseThrow( () -> new ResourceNotFoundException("Cliente não existe na base de dados para ser deletado.") );
         }
+
+        clienteRepository.findById(id)
+                .map(cliente -> {
+                    clienteRepository.delete(cliente);
+                    return Void.TYPE;
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado na base de dados para ser deletado."));
     }
 
     @Override
-    public ClienteDTO atualizarCliente(Long id, ClienteDTO clienteDadosAtualizados) {
-        ValidacoesUtil.validarNome(clienteDadosAtualizados.nome());
-        ValidacoesUtil.validarCpf(clienteDadosAtualizados.cpf());
-        ValidacoesUtil.validarEmail(clienteDadosAtualizados.email());
+    public ClienteDTO atualizarCliente(Long id, ClienteDTO clienteDTO) {
+        validarClienteDTO(clienteDTO);
 
-        if (clienteRepository.existsByEmail(clienteDadosAtualizados.email()) &&
-                !clienteRepository.findById(id).map(Cliente::getEmail).orElse("").equals(clienteDadosAtualizados.email())) {
-            throw new ConflitoAtributoException("Email já existente");
-        }
-
-        if (clienteRepository.existsByCpf(clienteDadosAtualizados.cpf()) &&
-                !clienteRepository.findById(id).map(Cliente::getCpf).orElse("").equals(clienteDadosAtualizados.cpf())) {
-            throw new ConflitoAtributoException("CPF já existente");
-        }
-
-        Cliente clienteRetornado = clienteRepository.findById(id)
+        Cliente clienteExistente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
 
-        clienteRetornado.setNome(clienteDadosAtualizados.nome());
-        clienteRetornado.setCpf(clienteDadosAtualizados.cpf());
-        clienteRetornado.setEmail(clienteDadosAtualizados.email());
+        if (emailOuCpfExistente(clienteDTO, clienteExistente)) {
+            throw new ConflitoAtributoException("Email ou CPF já existente");
+        }
 
-        Cliente clienteSalvo = clienteRepository.save(clienteRetornado);
+        clienteExistente.setNome(clienteDTO.nome());
+        clienteExistente.setCpf(clienteDTO.cpf());
+        clienteExistente.setEmail(clienteDTO.email());
 
-        return new ClienteDTO(
-                clienteSalvo.getId(),
-                clienteSalvo.getNome(),
-                clienteSalvo.getEmail(),
-                clienteSalvo.getCpf()
-        );
+        return converterParaDTO(clienteRepository.save(clienteExistente));
     }
 
     @Override
     public List<ClienteDTO> listarClientes() {
         return clienteRepository.findAll().stream()
-                .map(cliente -> new ClienteDTO(
-                        cliente.getId(),
-                        cliente.getNome(),
-                        cliente.getEmail(),
-                        cliente.getCpf()
-                ))
+                .map(this::converterParaDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public ClienteDTO listarClientePorId(Long id) {
         return clienteRepository.findById(id)
-                .map(cliente -> new ClienteDTO(
-                        cliente.getId(),
-                        cliente.getNome(),
-                        cliente.getEmail(),
-                        cliente.getCpf()
-                ))
+                .map(this::converterParaDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+    }
+
+    private void validarClienteDTO(ClienteDTO clienteDTO) {
+        ValidacoesUtil.validarNome(clienteDTO.nome());
+        ValidacoesUtil.validarCpf(clienteDTO.cpf());
+        ValidacoesUtil.validarEmail(clienteDTO.email());
+    }
+
+    private boolean emailOuCpfExistente(ClienteDTO clienteDTO, Cliente clienteExistente) {
+        return (clienteRepository.existsByEmail(clienteDTO.email()) && !clienteExistente.getEmail().equals(clienteDTO.email())) ||
+                (clienteRepository.existsByCpf(clienteDTO.cpf()) && !clienteExistente.getCpf().equals(clienteDTO.cpf()));
+    }
+
+    private ClienteDTO converterParaDTO(Cliente cliente) {
+        return new ClienteDTO(
+                cliente.getId(),
+                cliente.getNome(),
+                cliente.getEmail(),
+                cliente.getCpf()
+        );
     }
 }
