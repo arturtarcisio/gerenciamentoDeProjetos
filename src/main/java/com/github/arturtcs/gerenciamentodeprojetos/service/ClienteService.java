@@ -9,7 +9,7 @@ public interface ClienteService {
 
     ClienteDTO cadastrarCliente (ClienteDTO clienteDTO);
     void deletarCliente (Long id);
-    Cliente atualizarCliente (Long id, Cliente cliente);
+    ClienteDTO atualizarCliente (Long id, ClienteDTO clienteDTO);
     List<Cliente> listarClientes();
     Cliente listarClientePorId(Long id);
 

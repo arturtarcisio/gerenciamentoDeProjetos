@@ -1,6 +1,7 @@
 package com.github.arturtcs.gerenciamentodeprojetos.service.impl;
 
 import com.github.arturtcs.gerenciamentodeprojetos.exceptions.ClienteComProjetosException;
+import com.github.arturtcs.gerenciamentodeprojetos.exceptions.ConflitoAtributoException;
 import com.github.arturtcs.gerenciamentodeprojetos.exceptions.ResourceNotFoundException;
 import com.github.arturtcs.gerenciamentodeprojetos.model.Cliente;
 import com.github.arturtcs.gerenciamentodeprojetos.model.dto.ClienteDTO;
@@ -30,6 +31,12 @@ public class ClienteServiceImpl implements ClienteService {
         ValidacoesUtil.validarNome(clienteDTO.nome());
         ValidacoesUtil.validarCpf(clienteDTO.cpf());
         ValidacoesUtil.validarEmail(clienteDTO.email());
+
+        if (clienteRepository.existsByEmail(clienteDTO.email()))
+            throw new ConflitoAtributoException("Email já existente");
+
+        if (clienteRepository.existsByCpf(clienteDTO.cpf()))
+            throw new ConflitoAtributoException("CPF já existente");
 
         Cliente novoCliente = Cliente.builder()
                 .cpf(clienteDTO.cpf())
@@ -64,20 +71,36 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public Cliente atualizarCliente(Long id, Cliente cliente) {
+    public ClienteDTO atualizarCliente(Long id, ClienteDTO clienteDadosAtualizados) {
+        ValidacoesUtil.validarNome(clienteDadosAtualizados.nome());
+        ValidacoesUtil.validarCpf(clienteDadosAtualizados.cpf());
+        ValidacoesUtil.validarEmail(clienteDadosAtualizados.email());
 
-        ValidacoesUtil.validarNome(cliente.getNome());
-        ValidacoesUtil.validarCpf(cliente.getCpf());
-        ValidacoesUtil.validarEmail(cliente.getEmail());
+        if (clienteRepository.existsByEmail(clienteDadosAtualizados.email()) &&
+                !clienteRepository.findById(id).map(Cliente::getEmail).orElse("").equals(clienteDadosAtualizados.email())) {
+            throw new ConflitoAtributoException("Email já existente");
+        }
 
-        return clienteRepository.findById(id).map(clienteRetornado -> {
-            cliente.setId(clienteRetornado.getId());
-            cliente.setNome(clienteRetornado.getNome());
-            cliente.setCpf(clienteRetornado.getCpf());
-            cliente.setEmail(clienteRetornado.getEmail());
+        if (clienteRepository.existsByCpf(clienteDadosAtualizados.cpf()) &&
+                !clienteRepository.findById(id).map(Cliente::getCpf).orElse("").equals(clienteDadosAtualizados.cpf())) {
+            throw new ConflitoAtributoException("CPF já existente");
+        }
 
-            return clienteRepository.save(cliente);
-        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+        Cliente clienteRetornado = clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+
+        clienteRetornado.setNome(clienteDadosAtualizados.nome());
+        clienteRetornado.setCpf(clienteDadosAtualizados.cpf());
+        clienteRetornado.setEmail(clienteDadosAtualizados.email());
+
+        Cliente clienteSalvo = clienteRepository.save(clienteRetornado);
+
+        return new ClienteDTO(
+                clienteSalvo.getId(),
+                clienteSalvo.getNome(),
+                clienteSalvo.getEmail(),
+                clienteSalvo.getCpf()
+        );
     }
 
     @Override
