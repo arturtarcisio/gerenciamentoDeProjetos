@@ -9,7 +9,9 @@ import com.github.arturtcs.gerenciamentodeprojetos.service.ClienteService;
 import com.github.arturtcs.gerenciamentodeprojetos.service.ProjetoService;
 import com.github.arturtcs.gerenciamentodeprojetos.util.ValidacoesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -62,8 +64,20 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public void atualizarCliente(Long id, Cliente cliente) {
+    public Cliente atualizarCliente(Long id, Cliente cliente) {
 
+        ValidacoesUtil.validarNome(cliente.getNome());
+        ValidacoesUtil.validarCpf(cliente.getCpf());
+        ValidacoesUtil.validarEmail(cliente.getEmail());
+
+        return clienteRepository.findById(id).map(clienteRetornado -> {
+            cliente.setId(clienteRetornado.getId());
+            cliente.setNome(clienteRetornado.getNome());
+            cliente.setCpf(clienteRetornado.getCpf());
+            cliente.setEmail(clienteRetornado.getEmail());
+
+            return clienteRepository.save(cliente);
+        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
     }
 
     @Override
@@ -74,6 +88,6 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public Cliente listarClientePorId(Long id) {
         var optionalCliente = clienteRepository.findById(id);
-        return optionalCliente.orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado"));
+        return optionalCliente.orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }
 }
