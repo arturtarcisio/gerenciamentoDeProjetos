@@ -1,12 +1,11 @@
 package com.github.arturtcs.gerenciamentodeprojetos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.arturtcs.gerenciamentodeprojetos.enums.StatusProjeto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -29,7 +28,7 @@ public class Projeto {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "projeto")
+    @OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL)
     private Set<Atividade> atividades;
 
 

@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ProjetoRepository extends JpaRepository<Projeto, Long> {
 
     boolean existsByCliente_Id(Long id);
+    boolean existsByNome(String nome);
 }

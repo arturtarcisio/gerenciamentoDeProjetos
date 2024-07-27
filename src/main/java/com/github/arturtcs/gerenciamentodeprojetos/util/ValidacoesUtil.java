@@ -23,4 +23,5 @@ public class ValidacoesUtil {
         if (StringUtils.isEmpty(nome))
             throw new NomeObrigatorioException("O nome deve ser informado.");
     }
+
 }

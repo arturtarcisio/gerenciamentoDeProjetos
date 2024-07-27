@@ -34,7 +34,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConflitoAtributoException.class)
-    public ResponseEntity<String> handleClienteComProjetosException(ConflitoAtributoException ex) {
+    public ResponseEntity<String> handleConflitoAtributoException(ConflitoAtributoException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RegraDeNegocioException.class)
+    public ResponseEntity<String> handleRegraDeNegocioException(RegraDeNegocioException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
