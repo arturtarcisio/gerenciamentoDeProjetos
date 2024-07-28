@@ -1,4 +1,4 @@
-# gGerenciamento De Projetos
+# Gerenciamento De Projetos
 
 Este projeto é parte de um desafio de desenvolvimento de software, onde são implementadas diversas funcionalidades para gerenciar projetos. O projeto é uma API em Java.
 
