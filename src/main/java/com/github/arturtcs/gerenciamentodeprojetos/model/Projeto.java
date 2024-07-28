@@ -1,6 +1,7 @@
 package com.github.arturtcs.gerenciamentodeprojetos.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.arturtcs.gerenciamentodeprojetos.enums.StatusProjeto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,12 +25,13 @@ public class Projeto {
     @Enumerated(EnumType.STRING)
     private StatusProjeto status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id")
+    @JsonManagedReference
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Set<Atividade> atividades = new HashSet<>();
 
 }

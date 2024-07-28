@@ -25,7 +25,7 @@ public class Cliente {
     private String cpf;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "cliente")
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
     private Set<Projeto> projetos;
 
 }

@@ -1,11 +1,15 @@
 package com.github.arturtcs.gerenciamentodeprojetos.service.impl;
 
+import com.github.arturtcs.gerenciamentodeprojetos.enums.StatusProjeto;
 import com.github.arturtcs.gerenciamentodeprojetos.exceptions.ConflitoAtributoException;
 import com.github.arturtcs.gerenciamentodeprojetos.exceptions.RegraDeNegocioException;
 import com.github.arturtcs.gerenciamentodeprojetos.exceptions.ResourceNotFoundException;
+import com.github.arturtcs.gerenciamentodeprojetos.model.Atividade;
 import com.github.arturtcs.gerenciamentodeprojetos.model.Cliente;
 import com.github.arturtcs.gerenciamentodeprojetos.model.Projeto;
+import com.github.arturtcs.gerenciamentodeprojetos.model.dto.AtividadeDTO;
 import com.github.arturtcs.gerenciamentodeprojetos.model.dto.ProjetoDTO;
+import com.github.arturtcs.gerenciamentodeprojetos.model.dto.ProjetoEmAbertoDTO;
 import com.github.arturtcs.gerenciamentodeprojetos.repositories.ClienteRepository;
 import com.github.arturtcs.gerenciamentodeprojetos.repositories.ProjetoRepository;
 import com.github.arturtcs.gerenciamentodeprojetos.service.ProjetoService;
@@ -15,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,6 +95,11 @@ public class ProjetoServiceImpl implements ProjetoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado"));
     }
 
+    public List<ProjetoEmAbertoDTO> listarProjetosEmAberto() {
+        List<Projeto> projetos = projetoRepository.findByStatusWithAtividades(StatusProjeto.ABERTO);
+        return projetos.stream().map(this::toProjetoEmAbertoDTO).collect(Collectors.toList());
+    }
+
     private void validarProjetoDTO(ProjetoDTO projetoDTO) {
         ValidacoesUtil.validarNome(projetoDTO.nome());
         ValidacoesUtil.validaStatusDoProjeto(projetoDTO.status());
@@ -105,6 +115,29 @@ public class ProjetoServiceImpl implements ProjetoService {
                 projeto.getNome(),
                 projeto.getStatus(),
                 projeto.getCliente().getId()
+        );
+    }
+
+    private ProjetoEmAbertoDTO toProjetoEmAbertoDTO(Projeto projeto) {
+        return new ProjetoEmAbertoDTO(
+                projeto.getId(),
+                projeto.getNome(),
+                projeto.getStatus(),
+                projeto.getCliente().getNome(),
+                toAtividadeDTOSet(projeto.getAtividades())
+        );
+    }
+
+    private Set<AtividadeDTO> toAtividadeDTOSet(Set<Atividade> atividades) {
+        return atividades.stream().map(this::toAtividadeDTO).collect(Collectors.toSet());
+    }
+
+    private AtividadeDTO toAtividadeDTO(Atividade atividade) {
+        return new AtividadeDTO(
+                atividade.getId(),
+                atividade.getDescricao(),
+                atividade.getStatus(),
+                atividade.getProjeto().getId()
         );
     }
 }

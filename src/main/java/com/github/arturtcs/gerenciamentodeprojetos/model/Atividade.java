@@ -1,5 +1,6 @@
 package com.github.arturtcs.gerenciamentodeprojetos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.arturtcs.gerenciamentodeprojetos.enums.StatusAtividade;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,7 +21,8 @@ public class Atividade {
     @Enumerated(EnumType.STRING)
     private StatusAtividade status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projeto_id", nullable = false)
+    @JsonBackReference
     private Projeto projeto;
 }

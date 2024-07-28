@@ -2,6 +2,7 @@ package com.github.arturtcs.gerenciamentodeprojetos.resources;
 
 import com.github.arturtcs.gerenciamentodeprojetos.model.dto.ClienteDTO;
 import com.github.arturtcs.gerenciamentodeprojetos.model.dto.ProjetoDTO;
+import com.github.arturtcs.gerenciamentodeprojetos.model.dto.ProjetoEmAbertoDTO;
 import com.github.arturtcs.gerenciamentodeprojetos.service.ProjetoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,11 @@ public class ProjetoResource {
     public ResponseEntity<ProjetoDTO> atualizarProjeto(@PathVariable Long id, @RequestBody ProjetoDTO projetoAtualizado) {
         var clienteAtualizado = projetoService.atualizarProjeto(id, projetoAtualizado);
         return ResponseEntity.ok().body(clienteAtualizado);
+    }
+
+    @GetMapping("/abertos")
+    public ResponseEntity<List<ProjetoEmAbertoDTO>> listarTodosOsProjetosEmAberto() {
+        return ResponseEntity.ok(projetoService.listarProjetosEmAberto());
     }
 
 }
