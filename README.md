@@ -11,6 +11,11 @@ Este projeto é parte de um desafio de desenvolvimento de software, onde são im
 - Tomcat
 - Swagger
 
+  ![image](https://github.com/user-attachments/assets/f6f5540f-3e3e-4720-9e2e-abccacfcb56d)
+
+  Swagger: http://localhost:8080/swagger-ui/index.html
+
+
 ### Passo a Passo para Executar uma Aplicação Spring Boot
 
 #### 1. Configuração das Variáveis de Ambiente do Java:
